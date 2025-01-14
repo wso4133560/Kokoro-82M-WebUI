@@ -1,0 +1,6 @@
+kokoro_audio/
+KOKORO/voices/
+cache/
+__pycache__/
+run_app.bat
+*.pth
