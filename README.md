@@ -13,7 +13,8 @@ My Python Version is 3.10.9.
 
 #### 1. Clone the GitHub Repository:
 ```bash
-git clone https://github.com/NeuralFalconYT/kokoro-82M-gradio.git
+git clone https://github.com/NeuralFalconYT/Kokoro-82M-WebUI.git
+cd Kokoro-82M-WebUI
 ```
 
 #### 2. Create a Python Virtual Environment:
