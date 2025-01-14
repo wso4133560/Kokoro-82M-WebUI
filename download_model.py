@@ -54,3 +54,32 @@ if os.path.basename(fp16_file) not in os.listdir("./KOKORO/fp16/"):
     file_path = hf_hub_download(repo_id=repo_id, filename=fp16_file, cache_dir=cache_dir)
     shutil.copy(file_path, os.path.join("./KOKORO/fp16/", os.path.basename(fp16_file)))
     print(f"Downloaded: {os.path.basename(fp16_file)} to ./KOKORO/fp16/")
+
+
+#For Windows one click run
+import os
+import platform
+
+def setup_batch_file():
+    # Check if the system is Windows
+    if platform.system() == "Windows":
+        # Check if 'run.bat' exists in the current folder
+        if os.path.exists("run.bat"):
+            print("'run.bat' already exists in the current folder.")
+        else:
+            # Content for run_app.bat
+            bat_content_app = '''@echo off
+call myenv\\Scripts\\activate
+@python.exe app.py %*
+@pause
+'''
+            # Save the content to run_app.bat
+            with open('run_app.bat', 'w') as bat_file:
+                bat_file.write(bat_content_app)
+            print("The 'run_app.bat' file has been created.")
+    else:
+        print("This system is not Windows. Batch file creation skipped.")
+
+# Run the setup function
+setup_batch_file()
+
