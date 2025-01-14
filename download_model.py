@@ -12,6 +12,8 @@ os.makedirs(cache_dir, exist_ok=True)
 def get_voice_models():
     # Ensure the 'voices' directory exists
     voices_dir = './KOKORO/voices'
+    if os.path.exists(voices_dir):
+        shutil.rmtree(voices_dir)
     os.makedirs(voices_dir, exist_ok=True)
 
     # Get the list of all files
@@ -56,6 +58,8 @@ if os.path.basename(fp16_file) not in os.listdir("./KOKORO/fp16/"):
     print(f"Downloaded: {os.path.basename(fp16_file)} to ./KOKORO/fp16/")
 
 
+
+
 #For Windows one click run
 import os
 import platform
@@ -83,3 +87,43 @@ call myenv\\Scripts\\activate
 # Run the setup function
 setup_batch_file()
 
+
+
+
+import torch
+import os
+from itertools import combinations
+
+def mix_all_voices(folder_path="./KOKORO/voices"):
+    """Mix all pairs of voice models and save the new models."""
+    # Get the list of available voice packs
+    available_voice_pack = [
+        os.path.splitext(filename)[0]
+        for filename in os.listdir(folder_path)
+        if filename.endswith('.pt')
+    ]
+
+    # Generate all unique pairs of voices
+    voice_combinations = combinations(available_voice_pack, 2)
+
+    # Function to mix two voices
+    def mix_model(voice_1, voice_2):
+        """Mix two voice models and save the new model."""
+        new_name = f"{voice_1}_mix_{voice_2}"
+        voice_id_1 = torch.load(f'{folder_path}/{voice_1}.pt', weights_only=True)
+        voice_id_2 = torch.load(f'{folder_path}/{voice_2}.pt', weights_only=True)
+
+        # Create the mixed model by averaging the weights
+        mixed_voice = torch.mean(torch.stack([voice_id_1, voice_id_2]), dim=0)
+
+        # Save the mixed model
+        torch.save(mixed_voice, f'{folder_path}/{new_name}.pt')
+        print(f"Created new voice model: {new_name}")
+
+    # Create mixed voices for each pair
+    for voice_1, voice_2 in voice_combinations:
+        print(f"Mixing {voice_1} ❤️ {voice_2}")
+        mix_model(voice_1, voice_2)
+
+# Call the function to mix all voices
+mix_all_voices("./KOKORO/voices")
