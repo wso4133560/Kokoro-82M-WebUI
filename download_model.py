@@ -25,7 +25,8 @@ def get_voice_models():
 
     # Identify files that need to be downloaded
     download_voice = [file for file in voice_files if file not in current_voice]
-    print(f"Files to download: {download_voice}")
+    if download_voice:
+        print(f"Files to download: {download_voice}")
 
     # Download each missing file
     for file in download_voice:
