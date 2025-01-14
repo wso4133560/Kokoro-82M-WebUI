@@ -1,5 +1,7 @@
 from KOKORO.models import build_model
 from KOKORO.utils import tts,tts_file_name
+import sys
+sys.path.append('.')
 import torch
 
 print("Loading model...")
