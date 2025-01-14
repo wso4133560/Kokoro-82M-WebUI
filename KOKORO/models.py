@@ -1,8 +1,8 @@
 # https://github.com/yl4579/StyleTTS2/blob/main/models.py
-from istftnet import AdaIN1d, Decoder
+from .istftnet import AdaIN1d, Decoder
 from munch import Munch
 from pathlib import Path
-from plbert import load_plbert
+from .plbert import load_plbert
 from torch.nn.utils import weight_norm, spectral_norm
 import json
 import numpy as np
