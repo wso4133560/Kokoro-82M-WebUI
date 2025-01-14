@@ -106,6 +106,21 @@ def mix_all_voices(folder_path="./KOKORO/voices"):
     # Generate all unique pairs of voices
     voice_combinations = combinations(available_voice_pack, 2)
 
+    # def mix_model(voice_1, voice_2, weight_1=0.6, weight_2=0.4):
+    #     """Mix two voice models with a weighted average and save the new model."""
+    #     new_name = f"{voice_1}_mix_{voice_2}"
+    #     voice_id_1 = torch.load(f'{folder_path}/{voice_1}.pt', weights_only=True)
+    #     voice_id_2 = torch.load(f'{folder_path}/{voice_2}.pt', weights_only=True)
+        
+    #     # Create the mixed model using a weighted average
+    #     mixed_voice = (weight_1 * voice_id_1) + (weight_2 * voice_id_2)
+        
+    #     # Save the mixed model
+    #     torch.save(mixed_voice, f'{folder_path}/{new_name}.pt')
+    #     print(f"Created new voice model: {new_name}")
+    
+
+    
     # Function to mix two voices
     def mix_model(voice_1, voice_2):
         """Mix two voice models and save the new model."""
