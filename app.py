@@ -29,7 +29,7 @@ def update_model(model_name):
     model_path = f"./KOKORO/{model_name}"  # Default model path
     if model_name == "kokoro-v0_19-half.pth":
         model_path = f"./KOKORO/fp16/{model_name}"  # Update path for specific model
-    print(f"Loading new model: {model_name}")
+    # print(f"Loading new model: {model_name}")
     del MODEL  # Cleanup existing model
     gc.collect()
     torch.cuda.empty_cache()  # Ensure GPU memory is cleared
