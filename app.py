@@ -70,11 +70,19 @@ import gradio as gr
 #     'bf_emma', 'bf_isabella', 'bm_george', 'bm_lewis',
 # ]
 
+
+
 import os
-voice_list=[]
-for i in os.listdir("./KOKORO/voices"):
-    voice_list.append(i.replace(".pt",""))   
-# print(voice_list)     
+
+# Get the list of voice names without file extensions
+voice_list = [
+    os.path.splitext(filename)[0]
+    for filename in os.listdir("./KOKORO/voices")
+    if filename.endswith('.pt')
+]
+
+# Sort the list based on the length of each name
+voice_list = sorted(voice_list, key=len)
 
 def toggle_autoplay(autoplay):
     return gr.Audio(interactive=False, label='Output Audio', autoplay=autoplay)
