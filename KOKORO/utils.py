@@ -9,7 +9,8 @@ import wave
 import numpy as np
 import torch
 
-temp_folder = os.getcwd().replace("/KOKORO", "/kokoro_audio")
+current_folder = os.getcwd()
+temp_folder = current_folder.replace("/KOKORO", "/kokoro_audio")
 os.makedirs(temp_folder, exist_ok=True)
 print(f"Created folder: {temp_folder}")
 
@@ -150,11 +151,49 @@ def play_audio(filename):
     play_obj.wait_done()
 
 
+import re
+
+def clean_text(text):
+    # Define replacement rules
+    replacements = {
+        "–": " ",  # Replace en-dash with space
+        "-": " ",  # Replace hyphen with space
+        ":": ",",  # Replace colon with comma
+        "**": " ", # Replace double asterisks with space
+        "*": " ",  # Replace single asterisk with space
+    }
+
+    # Apply replacements
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+
+    # Remove emojis using regex (covering wide range of Unicode characters)
+    emoji_pattern = re.compile(
+        r'[\U0001F600-\U0001F64F]|'  # Emoticons
+        r'[\U0001F300-\U0001F5FF]|'  # Miscellaneous symbols and pictographs
+        r'[\U0001F680-\U0001F6FF]|'  # Transport and map symbols
+        r'[\U0001F700-\U0001F77F]|'  # Alchemical symbols
+        r'[\U0001F780-\U0001F7FF]|'  # Geometric shapes extended
+        r'[\U0001F800-\U0001F8FF]|'  # Supplemental arrows-C
+        r'[\U0001F900-\U0001F9FF]|'  # Supplemental symbols and pictographs
+        r'[\U0001FA00-\U0001FA6F]|'  # Chess symbols
+        r'[\U0001FA70-\U0001FAFF]|'  # Symbols and pictographs extended-A
+        r'[\U00002702-\U000027B0]|'  # Dingbats
+        r'[\U0001F1E0-\U0001F1FF]'   # Flags (iOS)
+        r'', flags=re.UNICODE)
+    text = emoji_pattern.sub(r'', text)
+
+    # Remove multiple spaces and extra line breaks
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    return text
 
 
 def tts(MODEL,device,text, voice_name, speed=1.0, trim=0.5, pad_between_segments=0.5, output_file="",remove_silence=True,minimum_silence=50):
+    text=clean_text(text)
     segments = large_text(text, voice_name)
-    VOICEPACK = torch.load(f'./voices/{voice_name}.pt', weights_only=True).to(device)
+    voice_pack_path = f"./KOKORO/voices/{voice_name}.pt"
+    VOICEPACK = torch.load(voice_pack_path, weights_only=True).to(device)
     speed = clamp_speed(speed)
     trim = clamp_trim(trim)
     silence_duration = clamp_trim(pad_between_segments)
@@ -216,39 +255,3 @@ def tts_file_name(text):
     return file_name
 
 
-import re
-
-def clean_text(text):
-    # Define replacement rules
-    replacements = {
-        "–": " ",  # Replace en-dash with space
-        "-": " ",  # Replace hyphen with space
-        ":": ",",  # Replace colon with comma
-        "**": " ", # Replace double asterisks with space
-        "*": " ",  # Replace single asterisk with space
-    }
-
-    # Apply replacements
-    for old, new in replacements.items():
-        text = text.replace(old, new)
-
-    # Remove emojis using regex (covering wide range of Unicode characters)
-    emoji_pattern = re.compile(
-        r'[\U0001F600-\U0001F64F]|'  # Emoticons
-        r'[\U0001F300-\U0001F5FF]|'  # Miscellaneous symbols and pictographs
-        r'[\U0001F680-\U0001F6FF]|'  # Transport and map symbols
-        r'[\U0001F700-\U0001F77F]|'  # Alchemical symbols
-        r'[\U0001F780-\U0001F7FF]|'  # Geometric shapes extended
-        r'[\U0001F800-\U0001F8FF]|'  # Supplemental arrows-C
-        r'[\U0001F900-\U0001F9FF]|'  # Supplemental symbols and pictographs
-        r'[\U0001FA00-\U0001FA6F]|'  # Chess symbols
-        r'[\U0001FA70-\U0001FAFF]|'  # Symbols and pictographs extended-A
-        r'[\U00002702-\U000027B0]|'  # Dingbats
-        r'[\U0001F1E0-\U0001F1FF]'   # Flags (iOS)
-        r'', flags=re.UNICODE)
-    text = emoji_pattern.sub(r'', text)
-
-    # Remove multiple spaces and extra line breaks
-    text = re.sub(r'\s+', ' ', text).strip()
-
-    return text
