@@ -8,6 +8,12 @@ from pydub import AudioSegment
 import wave
 import numpy as np
 import torch
+
+temp_folder = os.getcwd().replace("/KOKORO", "/kokoro_audio")
+os.makedirs(temp_folder, exist_ok=True)
+print(f"Created folder: {temp_folder}")
+
+
 debug=False
 def resplit_strings(arr):
     # Handle edge cases
@@ -100,7 +106,8 @@ def trim_if_needed(out, trim):
 
 #Above code copied from https://huggingface.co/spaces/hexgrad/Kokoro-TTS/blob/main/app.py
 
-def get_random_file_name(output_file, temp_folder="./kokoro_audio"):
+def get_random_file_name(output_file):
+    global temp_folder
     if output_file=="":
         random_id = str(uuid.uuid4())[:8]
         output_file = f"{temp_folder}/{random_id}.wav"
@@ -191,7 +198,8 @@ def tts(MODEL,device,text, voice_name, speed=1.0, trim=0.5, pad_between_segments
 
 
 
-def tts_file_name(text, temp_folder="./kokoro_audio"):
+def tts_file_name(text):
+    global temp_folder
     # Remove all non-alphabetic characters and convert to lowercase
     text = re.sub(r'[^a-zA-Z\s]', '', text)  # Retain only alphabets and spaces
     text = text.lower().strip()             # Convert to lowercase and strip leading/trailing spaces
