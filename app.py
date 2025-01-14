@@ -3,23 +3,38 @@ from KOKORO.utils import tts,tts_file_name
 import sys
 sys.path.append('.')
 import torch
-
+import gc 
 print("Loading model...")
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'Using device: {device}')
-# MODEL = build_model('./KOKORO/kokoro-v0_19.pth', device)
-MODEL = build_model('./KOKORO/fp16/kokoro-v0_19-half.pth', device)
-
+MODEL = build_model('./KOKORO/kokoro-v0_19.pth', device)
 print("Model loaded successfully.")
 
-
+model_list=["kokoro-v0_19.pth","kokoro-v0_19-half.pth"]
+current_model=model_list[0]
+def update_model(model_name):
+    print(f"Current Model {model_name}")
+    global MODEL,current_model
+    if current_model==model_name:
+        return f"Model already set to {model_name}"
+    model_path="./KOKORO/kokoro-v0_19.pth"
+    if model_name=="kokoro-v0_19-half.pth":
+        model_path="./KOKORO/fp16/kokoro-v0_19-half.pth"
+    del MODEL
+    gc.collect()
+    torch.cuda.empty_cache()
+    MODEL = build_model(model_path, device)
+    current_model=model_name
+    return f"Model updated to {model_name}"
 
 def tts_maker(text,voice_name="af_bella",speed = 0.8,trim=0,pad_between=0,save_path="temp.wav",remove_silence=False,minimum_silence=50):
+    global MODEL
     audio_path=tts(MODEL,device,text,voice_name,speed=speed,trim=trim,pad_between_segments=pad_between,output_file=save_path,remove_silence=remove_silence,minimum_silence=minimum_silence)
     return audio_path
 
 
-def text_to_speech(text, voice_name, speed, trim, pad_between_segments, remove_silence, minimum_silence):
+def text_to_speech(text,model_name, voice_name, speed, trim, pad_between_segments, remove_silence, minimum_silence):
+    update_model(model_name)
     if not minimum_silence:
         minimum_silence=0.05
     keep_silence=int(minimum_silence * 1000)
@@ -66,6 +81,7 @@ with gr.Blocks() as demo:
             with gr.Row():
                 generate_btn = gr.Button('Generate', variant='primary')
             with gr.Accordion('Audio Settings', open=False):
+                model_name=gr.Dropdown(model_list,label="Model",value=model_list[0])
                 remove_silence = gr.Checkbox(value=False, label='✂️ Remove Silence From TTS')
                 minimum_silence = gr.Number(
                     label="Keep Silence Upto (In seconds)", 
@@ -92,12 +108,12 @@ with gr.Blocks() as demo:
 
     text.submit(
         text_to_speech, 
-        inputs=[text, voice, speed, trim, pad_between, remove_silence, minimum_silence], 
+        inputs=[text, model_name,voice, speed, trim, pad_between, remove_silence, minimum_silence], 
         outputs=[audio]
     )
     generate_btn.click(
         text_to_speech, 
-        inputs=[text, voice, speed, trim, pad_between, remove_silence, minimum_silence], 
+        inputs=[text,model_name, voice, speed, trim, pad_between, remove_silence, minimum_silence], 
         outputs=[audio]
     )
 
@@ -123,9 +139,11 @@ if __name__ == "__main__":
 # import shutil
 # import os
 # os.makedirs("temp_audio", exist_ok=True)
-# client = Client("http://127.0.0.1:8080/")
+# from gradio_client import Client
+# client = Client("http://127.0.0.1:7860/")
 # result = client.predict(
 # 		text="Hello!!",
+# 		model_name="kokoro-v0_19.pth",
 # 		voice_name="af_bella",
 # 		speed=1,
 # 		trim=0,
@@ -134,6 +152,7 @@ if __name__ == "__main__":
 # 		minimum_silence=0.05,
 # 		api_name="/text_to_speech"
 # )
+
 # save_at=f"./temp_audio/{os.path.basename(result)}"
 # shutil.move(result, save_at)
 # print(f"Saved at {save_at}")
