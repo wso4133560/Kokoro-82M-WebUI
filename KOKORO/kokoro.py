@@ -2,6 +2,18 @@ import phonemizer
 import re
 import torch
 
+import os
+import platform
+
+# Check if the system is Windows
+is_windows = platform.system() == "Windows"
+
+# If Windows, set the environment variables
+if is_windows:
+    os.environ["PHONEMIZER_ESPEAK_LIBRARY"] = r"C:\Program Files\eSpeak NG\libespeak-ng.dll"
+    os.environ["PHONEMIZER_ESPEAK_PATH"] = r"C:\Program Files\eSpeak NG\espeak-ng.exe"
+
+
 def split_num(num):
     num = num.group()
     if '.' in num:
