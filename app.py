@@ -10,37 +10,55 @@ print(f'Using device: {device}')
 MODEL = build_model('./KOKORO/kokoro-v0_19.pth', device)
 print("Model loaded successfully.")
 
-model_list=["kokoro-v0_19.pth","kokoro-v0_19-half.pth"]
-current_model=model_list[0]
-def update_model(model_name):
-    print(f"Current Model {model_name}")
-    global MODEL,current_model
-    if current_model==model_name:
-        return f"Model already set to {model_name}"
-    model_path="./KOKORO/kokoro-v0_19.pth"
-    if model_name=="kokoro-v0_19-half.pth":
-        model_path="./KOKORO/fp16/kokoro-v0_19-half.pth"
-    del MODEL
-    gc.collect()
-    torch.cuda.empty_cache()
-    MODEL = build_model(model_path, device)
-    current_model=model_name
-    return f"Model updated to {model_name}"
-
 def tts_maker(text,voice_name="af_bella",speed = 0.8,trim=0,pad_between=0,save_path="temp.wav",remove_silence=False,minimum_silence=50):
     global MODEL
     audio_path=tts(MODEL,device,text,voice_name,speed=speed,trim=trim,pad_between_segments=pad_between,output_file=save_path,remove_silence=remove_silence,minimum_silence=minimum_silence)
     return audio_path
 
 
-def text_to_speech(text,model_name, voice_name, speed, trim, pad_between_segments, remove_silence, minimum_silence):
-    update_model(model_name)
+model_list = ["kokoro-v0_19.pth", "kokoro-v0_19-half.pth"]
+current_model = model_list[0]
+
+def update_model(model_name):
+    """
+    Updates the TTS model only if the specified model is not already loaded.
+    """
+    global MODEL, current_model
+    if current_model == model_name:
+        return f"Model already set to {model_name}"  # No need to reload
+    model_path = f"./KOKORO/{model_name}"  # Default model path
+    if model_name == "kokoro-v0_19-half.pth":
+        model_path = f"./KOKORO/fp16/{model_name}"  # Update path for specific model
+    print(f"Loading new model: {model_name}")
+    del MODEL  # Cleanup existing model
+    gc.collect()
+    torch.cuda.empty_cache()  # Ensure GPU memory is cleared
+    MODEL = build_model(model_path, device)
+    current_model = model_name
+    return f"Model updated to {model_name}"
+
+def text_to_speech(text, model_name, voice_name, speed, trim, pad_between_segments, remove_silence, minimum_silence):
+    """
+    Converts text to speech using the specified parameters and ensures the model is updated only if necessary.
+    """
+    update_status = update_model(model_name)  # Load the model only if required
+    print(update_status)  # Log model loading status
     if not minimum_silence:
-        minimum_silence=0.05
-    keep_silence=int(minimum_silence * 1000)
-    save_at=tts_file_name(text)
-    audio_path = tts_maker(text, voice_name, speed, trim, pad_between_segments,save_at, remove_silence, keep_silence)
+        minimum_silence = 0.05
+    keep_silence = int(minimum_silence * 1000)
+    save_at = tts_file_name(text)
+    audio_path = tts_maker(
+        text, 
+        voice_name, 
+        speed, 
+        trim, 
+        pad_between_segments, 
+        save_at, 
+        remove_silence, 
+        keep_silence
+    )
     return audio_path
+
 
 
 
