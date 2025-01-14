@@ -9,10 +9,23 @@ import wave
 import numpy as np
 import torch
 
-current_folder = os.getcwd()
-temp_folder = current_folder.replace("/KOKORO", "/kokoro_audio")
-os.makedirs(temp_folder, exist_ok=True)
-print(f"Created folder: {temp_folder}")
+# want to create a folder in currte . i import this from app.py
+
+import os
+
+def create_audio_dir():
+    """Creates the 'kokoro_audio' directory in the root folder if it doesn't exist."""
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    audio_dir = os.path.join(root_dir, "kokoro_audio")
+
+    if not os.path.exists(audio_dir):
+        os.makedirs(audio_dir)
+        print(f"Created directory: {audio_dir}")
+    else:
+        print(f"Directory already exists: {audio_dir}")
+    return audio_dir
+
+temp_folder = create_audio_dir()
 
 
 debug=False
