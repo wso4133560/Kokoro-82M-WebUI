@@ -7,7 +7,9 @@ import torch
 print("Loading model...")
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'Using device: {device}')
-MODEL = build_model('./KOKORO/kokoro-v0_19.pth', device)
+# MODEL = build_model('./KOKORO/kokoro-v0_19.pth', device)
+MODEL = build_model('./KOKORO/fp16/kokoro-v0_19-half.pth', device)
+
 print("Model loaded successfully.")
 
 
