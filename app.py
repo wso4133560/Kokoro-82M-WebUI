@@ -11,6 +11,8 @@ MODEL = build_model('./KOKORO/kokoro-v0_19.pth', device)
 print("Model loaded successfully.")
 
 def tts_maker(text,voice_name="af_bella",speed = 0.8,trim=0,pad_between=0,save_path="temp.wav",remove_silence=False,minimum_silence=50):
+    # Sanitize the save_path to remove any newline characters
+    save_path = save_path.replace('\n', '').replace('\r', '')
     global MODEL
     audio_path=tts(MODEL,device,text,voice_name,speed=speed,trim=trim,pad_between_segments=pad_between,output_file=save_path,remove_silence=remove_silence,minimum_silence=minimum_silence)
     return audio_path
