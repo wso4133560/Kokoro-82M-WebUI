@@ -142,3 +142,33 @@ def mix_all_voices(folder_path="./KOKORO/voices"):
 
 # Call the function to mix all voices
 mix_all_voices("./KOKORO/voices")
+
+
+def save_voice_names(directory="./KOKORO/voices", output_file="./voice_names.txt"):
+    """
+    Retrieves voice names from a directory, sorts them by length, and saves to a file.
+
+    Parameters:
+        directory (str): Directory containing the voice files.
+        output_file (str): File to save the sorted voice names.
+
+    Returns:
+        None
+    """
+    # Get the list of voice names without file extensions
+    voice_list = [
+        os.path.splitext(filename)[0]
+        for filename in os.listdir(directory)
+        if filename.endswith('.pt')
+    ]
+
+    # Sort the list based on the length of each name
+    voice_list = sorted(voice_list, key=len)
+
+    # Save the sorted list to the specified file
+    with open(output_file, "w") as f:
+        for voice_name in voice_list:
+            f.write(f"{voice_name}\n")
+
+    print(f"Voice names saved to {output_file}")
+save_voice_names()
