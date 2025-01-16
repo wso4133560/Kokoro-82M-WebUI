@@ -1,5 +1,5 @@
 from KOKORO.models import build_model
-from KOKORO.utils import tts,tts_file_name
+from KOKORO.utils import tts,tts_file_name,podcast
 import sys
 sys.path.append('.')
 import torch
@@ -90,8 +90,7 @@ voice_list = sorted(voice_list, key=len)
 def toggle_autoplay(autoplay):
     return gr.Audio(interactive=False, label='Output Audio', autoplay=autoplay)
 
-with gr.Blocks() as demo:
-    gr.Markdown("<h1 style='text-align:center;'>Kokoro TTS</h1>")
+with gr.Blocks() as demo1:
     with gr.Row():
         with gr.Column():
             text = gr.Textbox(
@@ -102,7 +101,7 @@ with gr.Blocks() as demo:
             with gr.Row():
                 voice = gr.Dropdown(
                     voice_list, 
-                    value='af_bella', 
+                    value='af', 
                     allow_custom_value=False, 
                     label='Voice', 
                     info='Starred voices are more stable'
@@ -146,6 +145,77 @@ with gr.Blocks() as demo:
         outputs=[audio]
     )
 
+def podcast_maker(text,remove_silence=False,minimum_silence=50,model_name="kokoro-v0_19.pth"):
+    global MODEL,device
+    update_model(model_name)
+    if not minimum_silence:
+        minimum_silence = 0.05
+    keep_silence = int(minimum_silence * 1000)
+    podcast_save_at=podcast(MODEL, device,text,remove_silence=remove_silence, minimum_silence=keep_silence)
+    return podcast_save_at
+    
+
+
+dummpy_example="""{af} Hello, I'd like to order a sandwich please.                                                         
+{af_sky} What do you mean you're out of bread?                                                                      
+{af_bella} I really wanted a sandwich though...                                                              
+{af_nicole} You know what, darn you and your little shop!                                                                       
+{bm_george} I'll just go back home and cry now.                                                                           
+{am_adam} Why me?"""
+with gr.Blocks() as demo2:
+    gr.Markdown(
+        """
+    # Multiple Speech-Type Generation
+    This section allows you to generate multiple speech types or multiple people's voices. Enter your text in the format shown below, and the system will generate speech using the appropriate type. If unspecified, the model will use "af" voice.
+    Format:
+    {voice_name} your text here
+    """
+    )
+    with gr.Row():
+        gr.Markdown(
+            """
+            **Example Input:**                                                                      
+            {af} Hello, I'd like to order a sandwich please.                                                         
+            {af_sky} What do you mean you're out of bread?                                                                      
+            {af_bella} I really wanted a sandwich though...                                                              
+            {af_nicole} You know what, darn you and your little shop!                                                                       
+            {bm_george} I'll just go back home and cry now.                                                                           
+            {am_adam} Why me?!                                                                         
+            """
+        )
+    with gr.Row():
+        with gr.Column():
+            text = gr.Textbox(
+                label='Enter Text',
+                lines=7,
+                placeholder=dummpy_example
+            )
+            with gr.Row():
+                generate_btn = gr.Button('Generate', variant='primary')
+            with gr.Accordion('Audio Settings', open=False):
+                remove_silence = gr.Checkbox(value=False, label='✂️ Remove Silence From TTS')
+                minimum_silence = gr.Number(
+                    label="Keep Silence Upto (In seconds)", 
+                    value=0.20
+                )
+        with gr.Column():
+            audio = gr.Audio(interactive=False, label='Output Audio', autoplay=True)
+            with gr.Accordion('Enable Autoplay', open=False):
+                autoplay = gr.Checkbox(value=True, label='Autoplay')
+                autoplay.change(toggle_autoplay, inputs=[autoplay], outputs=[audio])
+
+    text.submit(
+        podcast_maker, 
+        inputs=[text, remove_silence, minimum_silence], 
+        outputs=[audio]
+    )
+    generate_btn.click(
+        podcast_maker, 
+        inputs=[text, remove_silence, minimum_silence], 
+        outputs=[audio]
+    )
+
+
 
 
 import click
@@ -153,6 +223,7 @@ import click
 @click.option("--debug", is_flag=True, default=False, help="Enable debug mode.")
 @click.option("--share", is_flag=True, default=False, help="Enable sharing of the interface.")
 def main(debug, share):
+    demo = gr.TabbedInterface([demo1, demo2], ["Batched TTS", "Multiple Speech-Type Generation"],title="Kokoro TTS")
     demo.queue().launch(debug=debug, share=share)
     #Run on local network
     # laptop_ip="192.168.0.30"
