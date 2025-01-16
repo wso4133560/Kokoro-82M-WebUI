@@ -117,7 +117,7 @@ def trim_if_needed(out, trim):
 
 #Above code copied from https://huggingface.co/spaces/hexgrad/Kokoro-TTS/blob/main/app.py
 
-def get_random_file_name(output_file):
+def get_random_file_name(output_file=""):
     global temp_folder
     if output_file=="":
         random_id = str(uuid.uuid4())[:8]
@@ -199,6 +199,81 @@ def clean_text(text):
 
     return text
 
+#copied from F5TTS 😁
+import re
+def parse_speechtypes_text(gen_text):
+    # Pattern to find {speechtype}
+    pattern = r"\{(.*?)\}"
+
+    # Split the text by the pattern
+    tokens = re.split(pattern, gen_text)
+
+    segments = []
+
+    current_style = "af"
+
+    for i in range(len(tokens)):
+        if i % 2 == 0:
+            # This is text
+            text = tokens[i].strip()
+            if text:
+                text=clean_text(text)
+                segments.append({"voice_name": current_style, "text": text})
+        else:
+            # This is style
+            style = tokens[i].strip()
+            current_style = style
+
+    return segments
+
+def podcast(MODEL, device, gen_text, speed=1.0, trim=0, pad_between_segments=0, remove_silence=True, minimum_silence=50):
+    segments = parse_speechtypes_text(gen_text)
+    speed = clamp_speed(speed)
+    trim = clamp_trim(trim)
+    silence_duration = clamp_trim(pad_between_segments)
+    # output_file = get_random_file_name(output_file)
+    sample_rate = 24000  # Sample rate of the audio
+
+    # Create a silent audio segment in float32
+    silence = np.zeros(int(sample_rate * silence_duration), dtype=np.float32)
+    if len(segments)>=1:
+        first_line_text=segments[0]["text"]
+        output_file=tts_file_name(first_line_text)
+    else:
+        output_file = get_random_file_name("")
+    
+    output_file = output_file.replace('\n', '').replace('\r', '')
+    # Open a WAV file for writing
+    with wave.open(output_file, 'wb') as wav_file:
+        wav_file.setnchannels(1)  # Mono
+        wav_file.setsampwidth(2)  # 16-bit audio
+        wav_file.setframerate(sample_rate)
+
+        for idx, segment in enumerate(segments):  # Added index `idx` to track position
+            voice_name = segment["voice_name"]
+            text = segment["text"]
+            voice_pack_path = f"./KOKORO/voices/{voice_name}.pt"
+            VOICEPACK = torch.load(voice_pack_path, weights_only=True).to(device)
+
+            # Generate audio for the segment
+            audio, out_ps = generate(MODEL, text, VOICEPACK, lang=voice_name[0], speed=speed)
+            audio = trim_if_needed(audio, trim)
+
+            # Scale audio from float32 to int16
+            audio = (audio * 32767).astype(np.int16)
+
+            # Write the audio segment to the WAV file
+            wav_file.writeframes(audio.tobytes())
+
+            # Add silence between segments, except after the last segment
+            if idx != len(segments) - 1:
+                wav_file.writeframes((silence * 32767).astype(np.int16).tobytes())
+
+    # Optionally remove silence from the output file
+    if remove_silence:
+        output_file = remove_silence_function(output_file, minimum_silence=minimum_silence)
+
+    return output_file
 
 def tts(MODEL,device,text, voice_name, speed=1.0, trim=0.5, pad_between_segments=0.5, output_file="",remove_silence=True,minimum_silence=50):
     text=clean_text(text)
@@ -264,5 +339,4 @@ def tts_file_name(text):
     # Construct the file name
     file_name = f"{temp_folder}/{truncated_text}_{random_string}.wav"
     return file_name
-
 
