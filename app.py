@@ -215,15 +215,18 @@ with gr.Blocks() as demo2:
         outputs=[audio]
     )
 
+display_text = "  \n".join(voice_list)
 
-
+with gr.Blocks() as demo3:
+    gr.Markdown(f"# Voice Names \n{display_text}")
 
 import click
 @click.command()
 @click.option("--debug", is_flag=True, default=False, help="Enable debug mode.")
 @click.option("--share", is_flag=True, default=False, help="Enable sharing of the interface.")
 def main(debug, share):
-    demo = gr.TabbedInterface([demo1, demo2], ["Batched TTS", "Multiple Speech-Type Generation"],title="Kokoro TTS")
+    demo = gr.TabbedInterface([demo1, demo2,demo3], ["Batched TTS", "Multiple Speech-Type Generation","Available Voices"],title="Kokoro TTS")
+
     demo.queue().launch(debug=debug, share=share)
     #Run on local network
     # laptop_ip="192.168.0.30"
