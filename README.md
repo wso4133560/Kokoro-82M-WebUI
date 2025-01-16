@@ -98,8 +98,9 @@ To run the Gradio app, follow these steps:
    on Windows, double-click on `run_app.bat` to start the application.
 
 ---
-![app](https://github.com/user-attachments/assets/4db74922-7047-40cf-add1-b48274d27732)
-
+![app](https://github.com/user-attachments/assets/ef3e7c0f-8e72-471d-9639-5327b4f06b29)
+![Podcast](https://github.com/user-attachments/assets/03ddd9ee-5b41-4acb-b0c3-53ef5b1a7fbf)
+![voices](https://github.com/user-attachments/assets/d47f803c-b3fb-489b-bc7b-f08020401ce5)
 
 ### Credits
 [Kokoro HuggingFace](https://huggingface.co/hexgrad/Kokoro-82M)
