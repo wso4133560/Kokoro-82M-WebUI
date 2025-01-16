@@ -174,6 +174,7 @@ def clean_text(text):
         ":": ",",  # Replace colon with comma
         "**": " ", # Replace double asterisks with space
         "*": " ",  # Replace single asterisk with space
+        "#": " ",  # Replace hash with space
     }
 
     # Apply replacements
