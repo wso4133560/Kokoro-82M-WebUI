@@ -91,6 +91,7 @@ def toggle_autoplay(autoplay):
     return gr.Audio(interactive=False, label='Output Audio', autoplay=autoplay)
 
 with gr.Blocks() as demo1:
+    gr.Markdown("# Batched TTS")
     with gr.Row():
         with gr.Column():
             text = gr.Textbox(
@@ -225,7 +226,7 @@ import click
 @click.option("--debug", is_flag=True, default=False, help="Enable debug mode.")
 @click.option("--share", is_flag=True, default=False, help="Enable sharing of the interface.")
 def main(debug, share):
-    demo = gr.TabbedInterface([demo1, demo2,demo3], ["Batched TTS", "Multiple Speech-Type Generation","Available Voices"],title="Kokoro TTS")
+    demo = gr.TabbedInterface([demo1, demo2,demo3], ["Batched TTS", "Multiple Speech-Type Generation","Available Voice Names"],title="Kokoro TTS")
 
     demo.queue().launch(debug=debug, share=share)
     #Run on local network
