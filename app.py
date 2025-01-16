@@ -27,8 +27,7 @@ def update_model(model_name):
     """
     global MODEL, current_model
     if current_model == model_name:
-        return 
-        # return f"Model already set to {model_name}"  # No need to reload
+        return f"Model already set to {model_name}"  # No need to reload
     model_path = f"./KOKORO/{model_name}"  # Default model path
     if model_name == "kokoro-v0_19-half.pth":
         model_path = f"./KOKORO/fp16/{model_name}"  # Update path for specific model
@@ -38,7 +37,7 @@ def update_model(model_name):
     torch.cuda.empty_cache()  # Ensure GPU memory is cleared
     MODEL = build_model(model_path, device)
     current_model = model_name
-    # return f"Model updated to {model_name}"
+    return f"Model updated to {model_name}"
 
 
 def text_to_speech(text, model_name, voice_name, speed, trim, pad_between_segments, remove_silence, minimum_silence):
@@ -46,7 +45,7 @@ def text_to_speech(text, model_name, voice_name, speed, trim, pad_between_segmen
     Converts text to speech using the specified parameters and ensures the model is updated only if necessary.
     """
     update_status = update_model(model_name)  # Load the model only if required
-    print(update_status)  # Log model loading status
+    # print(update_status)  # Log model loading status
     if not minimum_silence:
         minimum_silence = 0.05
     keep_silence = int(minimum_silence * 1000)
