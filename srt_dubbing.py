@@ -466,6 +466,15 @@ with gr.Blocks() as demo3:
     # Generate Audio File From Subtitle [Single Speaker Only]
     """
     )
+    gr.Markdown(
+        """
+        # Generate Audio File From Subtitle [Single Speaker Only]
+        
+        To generate subtitles, you can use the [Whisper Turbo Subtitle](https://github.com/NeuralFalconYT/Whisper-Turbo-Subtitle) Colab notebook:
+        
+        [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NeuralFalconYT/Whisper-Turbo-Subtitle/blob/main/Whisper_Turbo_Subtitle.ipynb)
+        """
+    )
     with gr.Row():
         with gr.Column():
             srt_file = gr.File(label='Upload .srt Subtitle File Only')
