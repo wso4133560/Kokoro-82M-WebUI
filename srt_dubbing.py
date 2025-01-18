@@ -40,7 +40,7 @@ def update_model(model_name):
     return f"Model updated to {model_name}"
 
 
-def text_to_speech(text, model_name="kokoro-v0_19.pth", voice_name="af", speed=1.0, trim=1, pad_between_segments=0, remove_silence=False, minimum_silence=0.05):
+def text_to_speech(text, model_name="kokoro-v0_19.pth", voice_name="af", speed=1.0, trim=1.0, pad_between_segments=0, remove_silence=True, minimum_silence=0.20):
     """
     Converts text to speech using the specified parameters and ensures the model is updated only if necessary.
     """
@@ -472,7 +472,7 @@ with gr.Blocks() as demo3:
             with gr.Row():
                 voice = gr.Dropdown(
                     voice_list, 
-                    value='af', 
+                    value='am_adam', 
                     allow_custom_value=False, 
                     label='Voice', 
                 )
