@@ -40,6 +40,7 @@ def update_model(model_name):
     return f"Model updated to {model_name}"
 
 
+
 def text_to_speech(text, model_name="kokoro-v0_19.pth", voice_name="af", speed=1.0, trim=1.0, pad_between_segments=0, remove_silence=True, minimum_silence=0.20):
     """
     Converts text to speech using the specified parameters and ensures the model is updated only if necessary.
@@ -249,11 +250,19 @@ import time
 
 # os.chdir(install_path)
 
-def your_tts(text,audio_path):
+def your_tts(text,audio_path,actual_duration,speed=1.0):
   global srt_voice_name
   model_name="kokoro-v0_19.pth"
-  tts_path=text_to_speech(text, model_name, voice_name=srt_voice_name)
+  tts_path=text_to_speech(text, model_name, voice_name=srt_voice_name,speed=speed)
+  print(tts_path)
+  tts_audio = AudioSegment.from_file(tts_path)
+  tts_duration = len(tts_audio)
+  if tts_duration > actual_duration:
+    speedup_factor = tts_duration / actual_duration
+    tts_path=text_to_speech(text, model_name, voice_name=srt_voice_name,speed=speedup_factor)
+  print(tts_path)
   shutil.copy(tts_path,audio_path)
+
 
 
 base_path="."
@@ -316,8 +325,8 @@ class SRTDubbing:
 
     @staticmethod
     def text_to_speech_srt(text, audio_path, language, actual_duration):
-        tts_filename = "temp.wav"
-        your_tts(text,tts_filename)
+        tts_filename = "./cache/temp.wav"
+        your_tts(text,tts_filename,actual_duration,speed=1.0)
         # Check the duration of the generated TTS audio
         tts_audio = AudioSegment.from_file(tts_filename)
         tts_duration = len(tts_audio)
@@ -326,18 +335,17 @@ class SRTDubbing:
             # If actual duration is zero, use the original TTS audio without modifications
             shutil.move(tts_filename, audio_path)
             return
-
         # If TTS audio duration is longer than actual duration, speed up the audio
         if tts_duration > actual_duration:
             speedup_factor = tts_duration / actual_duration
-            speedup_filename = "speedup_temp.wav"
-
+            speedup_filename = "./cache/speedup_temp.wav"
             # Use ffmpeg to change audio speed
             subprocess.run([
                 "ffmpeg",
                 "-i", tts_filename,
                 "-filter:a", f"atempo={speedup_factor}",
-                speedup_filename
+                speedup_filename,
+                "-y"
             ], check=True)
 
             # Replace the original TTS audio with the sped-up version
@@ -461,16 +469,12 @@ def srt_process(srt_file_path,voice_name,dest_language="en"):
 
 
 with gr.Blocks() as demo3:
-    gr.Markdown(
-        """
-    # Generate Audio File From Subtitle [Single Speaker Only]
-    """
-    )
+
     gr.Markdown(
         """
         # Generate Audio File From Subtitle [Single Speaker Only]
         
-        To generate subtitles, you can use the [Whisper Turbo Subtitle](https://github.com/NeuralFalconYT/Whisper-Turbo-Subtitle) Colab notebook:
+        To generate subtitles, you can use the [Whisper Turbo Subtitle](https://github.com/NeuralFalconYT/Whisper-Turbo-Subtitle) 
         
         [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NeuralFalconYT/Whisper-Turbo-Subtitle/blob/main/Whisper_Turbo_Subtitle.ipynb)
         """
@@ -481,7 +485,7 @@ with gr.Blocks() as demo3:
             with gr.Row():
                 voice = gr.Dropdown(
                     voice_list, 
-                    value='am_adam', 
+                    value='af', 
                     allow_custom_value=False, 
                     label='Voice', 
                 )
