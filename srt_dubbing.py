@@ -1,3 +1,4 @@
+## Need FFMPEG https://www.youtube.com/watch?v=K7znsMo_48I
 from KOKORO.models import build_model
 from KOKORO.utils import tts,tts_file_name,podcast
 import sys
