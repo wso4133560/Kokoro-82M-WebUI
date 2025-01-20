@@ -44,14 +44,21 @@ Here’s the corrected version of point 4, with proper indentation for the subpo
     ```bash
     nvcc --version
     ```
-    This checks the installed version of CUDA to ensure compatibility with PyTorch.
+    Find your CUDA version example ```11.8```
 
-  - Visit [PyTorch Get Started](https://pytorch.org/get-started/locally/) and install the version compatible with your CUDA setup. For example, for CUDA 11.8:
-    ```bash
+  - Visit [PyTorch Get Started](https://pytorch.org/get-started/locally/) and install the version compatible with your CUDA setup.:<br>
+    - For CUDA 11.8:
+    ```
     pip install torch  --index-url https://download.pytorch.org/whl/cu118
     ```
-    Replace `cu118` with your CUDA version.
-
+    - For CUDA 12.1:
+    ```
+    pip install torch  --index-url https://download.pytorch.org/whl/cu121
+    ```
+    - For CUDA 12.4:
+    ```
+    pip install torch  --index-url https://download.pytorch.org/whl/cu124
+    ```
 - **For CPU (if not using GPU):**
   ```bash
   pip install torch
@@ -72,28 +79,28 @@ python download_model.py
 
 ---
 
-### Install eSpeak NG
+#### 7. Install eSpeak NG
 
-#### **For Windows:**
-1. Download the latest eSpeak NG release from the [eSpeak NG GitHub Releases](https://github.com/espeak-ng/espeak-ng/releases/tag/1.51).
-2. Locate and download the file named **`espeak-ng-X64.msi`**.
-3. Run the installer and follow the installation steps. Ensure that you install eSpeak NG in the default directory:
-   ```
-   C:\Program Files\eSpeak NG
-   ```
-   > **Note:** This default path is required for the application to locate eSpeak NG properly.
+- **For Windows:**
+  1. Download the latest eSpeak NG release from the [eSpeak NG GitHub Releases](https://github.com/espeak-ng/espeak-ng/releases/tag/1.51).
+  2. Locate and download the file named **`espeak-ng-X64.msi`**.
+  3. Run the installer and follow the installation steps. Ensure that you install eSpeak NG in the default directory:
+     ```
+     C:\Program Files\eSpeak NG
+     ```
+     > **Note:** This default path is required for the application to locate eSpeak NG properly.
 
-#### **For Linux:**
-1. Open your terminal.
-2. Install eSpeak NG using the following command:
-   ```bash
-   sudo apt-get -qq -y install espeak-ng > /dev/null 2>&1
-   ```
-   > **Note:** This command suppresses unnecessary output for a cleaner installation process.
+- **For Linux:**
+  1. Open your terminal.
+  2. Install eSpeak NG using the following command:
+     ```bash
+     sudo apt-get -qq -y install espeak-ng > /dev/null 2>&1
+     ```
+     > **Note:** This command suppresses unnecessary output for a cleaner installation process.
 
 ---
 
-### Run Gradio App
+#### 8. Run Gradio App
 
 To run the Gradio app, follow these steps:
 
