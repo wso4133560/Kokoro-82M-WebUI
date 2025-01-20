@@ -1,9 +1,10 @@
 # Kokoro-TTS
 
-**Note:** This is not the official repository. For a smoother experience, visit the [Hugging Face discussions](https://huggingface.co/hexgrad/Kokoro-82M/discussions) for an easy installation guide, including ONNX Runtime, FastAPI, RUST.
+**Note:** This is not the official repository. For a smoother experience, visit the [Hugging Face discussions](https://huggingface.co/hexgrad/Kokoro-82M/discussions) for an easy installation guide, including ONNX Runtime, FastAPI, etc.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NeuralFalconYT/Kokoro-82M-WebUI/blob/main/Kokoro_82M_Colab.ipynb) <br>
 [![HuggingFace Space Demo](https://img.shields.io/badge/🤗-Space%20demo-yellow)](https://huggingface.co/spaces/hexgrad/Kokoro-TTS)
+
 
 ---
 
@@ -33,26 +34,38 @@ This command creates a new Python virtual environment named `myenv` for isolatin
   source myenv/bin/activate
   ```
 This activates the virtual environment, enabling you to install and run dependencies in an isolated environment.
+Here’s the corrected version of point 4, with proper indentation for the subpoints:
 
-#### 4. Check CUDA Version:
-```bash
-nvcc --version
-```
-This checks the installed version of CUDA to ensure compatibility with PyTorch.
 
-#### 5. Install PyTorch:
-Visit [PyTorch Get Started](https://pytorch.org/get-started/locally/) and install the version compatible with your CUDA setup. For example:
-```bash
-pip install torch --index-url https://download.pytorch.org/whl/cu118
-```
+#### 4. Install PyTorch:
 
-#### 6. Install Required Dependencies:
+- **For GPU (CUDA-enabled installation):**
+  - Check CUDA Version (for GPU setup):
+    ```bash
+    nvcc --version
+    ```
+    This checks the installed version of CUDA to ensure compatibility with PyTorch.
+
+  - Visit [PyTorch Get Started](https://pytorch.org/get-started/locally/) and install the version compatible with your CUDA setup. For example, for CUDA 11.8:
+    ```bash
+    pip install torch  --index-url https://download.pytorch.org/whl/cu118
+    ```
+    Replace `cu118` with your CUDA version.
+
+- **For CPU (if not using GPU):**
+  ```bash
+  pip install torch
+  ```
+  This installs the CPU-only version of PyTorch.
+
+
+#### 5. Install Required Dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 This installs all the required Python libraries listed in the `requirements.txt` file.
 
-#### 7. Download Model and Get Latest VoicePack:
+#### 6. Download Model and Get Latest VoicePack:
 ```bash
 python download_model.py
 ```
@@ -94,10 +107,10 @@ To run the Gradio app, follow these steps:
    python app.py
    ```
 
-   Alternatively,
-   on Windows, double-click on `run_app.bat` to start the application.
+   Alternatively, on Windows, double-click on `run_app.bat` to start the application.
 
 ---
+
 ![app](https://github.com/user-attachments/assets/ef3e7c0f-8e72-471d-9639-5327b4f06b29)
 ![Podcast](https://github.com/user-attachments/assets/03ddd9ee-5b41-4acb-b0c3-53ef5b1a7fbf)
 ![voices](https://github.com/user-attachments/assets/d47f803c-b3fb-489b-bc7b-f08020401ce5)
