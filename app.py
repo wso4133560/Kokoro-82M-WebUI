@@ -228,7 +228,7 @@ import click
 def main(debug, share):
     demo = gr.TabbedInterface([demo1, demo2,demo3], ["Batched TTS", "Multiple Speech-Type Generation","Available Voice Names"],title="Kokoro TTS")
 
-    demo.queue().launch(debug=debug, share=share)
+    demo.queue().launch(server_name="0.0.0.0", server_port=7860, debug=debug, share=share)
     #Run on local network
     # laptop_ip="192.168.0.30"
     # port=8080
